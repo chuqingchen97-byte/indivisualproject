@@ -1,6 +1,6 @@
 # 🎬 电影评论多主体系统 (Multi-Agent System for Movie Review)
 
-一个基于 DeepSeek LLM 构建的多主体系统，用于模拟不同专业角色对电影**《燃烧女子的肖像》**的专业辩论和评价过程。
+一个基于 DeepSeek LLM 构建的多主体系统 (MAS)，用于模拟不同专业角色对电影**《燃烧女子的肖像》**的专业辩论和评价过程。
 
 ---
 
@@ -51,18 +51,31 @@
 * **爆米花 Agent：** 必须引用**具体的个人观影感受实例**。
 * **制作人 Agent：** 必须引用**市场数据、ROI 估算或制作流程数据**。
 
----
+## 5. 🧭 Workflow and System Architecture (工作流与系统架构)
 
-## 5. 🛠️ Project Structure (项目结构)
+本项目的工作流严格遵循一个中心控制器驱动的多主体交互模式。
 
-本项目采用单文件架构，所有核心逻辑、配置和 Agent 角色定义均包含在 `succeedproject.py` 文件中。
+### 5.1. 核心工作流描述
+
+| 步骤 | 组件 | 动作描述 |
+| :--- | :--- | :--- |
+| **初始化** | `ReviewController` & `MASConfig` | 加载 API 密钥；实例化所有 Agent。 |
+| **获取情境** | `ReviewController` | 根据回合数，生成基础情境和**动态指令 (高级论证要求)**。 |
+| **Agent 发言** | `BaseDebateAgent` | **接收：** 上一位 Agent 的发言作为反驳目标。**构建：** 将角色提示词、情境和反驳目标整合成最终的 LLM 输入。 |
+| **API 调用** | `DeepSeekClient` | 发送 LLM 输入给 DeepSeek API，请求生成符合角色约束的回复。 |
+| **输出与记录** | `BaseDebateAgent` & `ReviewController` | 格式化输出，打印到终端，并将发言记录到 Agent 内部内存。 |
+| **循环迭代** | `ReviewController` | 切换到下一位 Agent，并将当前发言作为下一轮的**对手发言**，直到达到 `total_rounds` 限制。 |
+
+## 6. 🛠️ Project Structure & Running (项目结构与运行指南)
+
+### 6.1. 项目结构
+
+本项目采用单文件架构：
 
 * `succeedproject.py`: 核心代码文件，包含所有 Agent 类、API 客户端和辩论控制器。
 * `.gitignore`: 确保敏感的 API 密钥文件 (`.env`) 不会被上传到 GitHub。
 
-## 6. 🚀 Getting Started (运行指南)
-
-### 6.1. 依赖安装
+### 6.2. 依赖安装
 
 确保您的 Python 环境中安装了以下库：
 
